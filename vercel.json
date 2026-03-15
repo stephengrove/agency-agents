@@ -1,5 +1,5 @@
 {
-  "buildCommand": "python3 build.py",
+  "buildCommand": "node build.js",
   "outputDirectory": "docs",
-  "installCommand": "pip install markdown"
+  "framework": null
 }
