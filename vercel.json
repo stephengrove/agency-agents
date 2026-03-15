@@ -1,0 +1,5 @@
+{
+  "buildCommand": "python3 build.py",
+  "outputDirectory": "docs",
+  "installCommand": "pip install markdown"
+}
