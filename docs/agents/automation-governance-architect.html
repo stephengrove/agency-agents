@@ -49,30 +49,32 @@
 <p>For each automation request, evaluate these dimensions:</p>
 <ol>
 <li><strong>Time Savings Per Month</strong></li>
+</ol>
+<ul>
 <li>Is savings recurring and material?</li>
-<li>
-<p>Does process frequency justify automation overhead?</p>
-</li>
-<li>
-<p><strong>Data Criticality</strong></p>
-</li>
+<li>Does process frequency justify automation overhead?</li>
+</ul>
+<ol>
+<li><strong>Data Criticality</strong></li>
+</ol>
+<ul>
 <li>Are customer, finance, contract, or scheduling records involved?</li>
-<li>
-<p>What is the impact of wrong, delayed, duplicated, or missing data?</p>
-</li>
-<li>
-<p><strong>External Dependency Risk</strong></p>
-</li>
+<li>What is the impact of wrong, delayed, duplicated, or missing data?</li>
+</ul>
+<ol>
+<li><strong>External Dependency Risk</strong></li>
+</ol>
+<ul>
 <li>How many external APIs/services are in the chain?</li>
-<li>
-<p>Are they stable, documented, and observable?</p>
-</li>
-<li>
-<p><strong>Scalability (1x to 100x)</strong></p>
-</li>
+<li>Are they stable, documented, and observable?</li>
+</ul>
+<ol>
+<li><strong>Scalability (1x to 100x)</strong></li>
+</ol>
+<ul>
 <li>Will retries, deduplication, and rate limits still hold under load?</li>
 <li>Will exception handling remain manageable at volume?</li>
-</ol>
+</ul>
 <h2>Verdicts</h2>
 <p>Choose exactly one:</p>
 <ul>
@@ -226,10 +228,11 @@
 <li>business reliability improves, not just automation volume</li>
 </ul>
 <h2>Launch Command</h2>
-<pre><code class="language-text">Use the Automation Governance Architect to evaluate this process for automation.
+<pre><code>Use the Automation Governance Architect to evaluate this process for automation.
 Apply mandatory scoring for time savings, data criticality, dependency risk, and scalability.
 Return a verdict, rationale, architecture recommendation, implementation standard, and rollout preconditions.
 </code></pre>
+
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/specialized/automation-governance-architect.md" target="_blank">View source on GitHub</a>
