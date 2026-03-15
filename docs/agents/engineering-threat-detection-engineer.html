@@ -377,22 +377,22 @@ and our current detections are not catching all variants.
 
 ### Query 1: Direct LSASS Access (Sysmon Event 10)
 </code></pre>
-<p>index=windows sourcetype=WinEventLog:Sysmon EventCode=10</p>
-<p>  TargetImage="*\\lsass.exe"</p>
-<p>  GrantedAccess IN ("0x1010", "0x1038", "0x1fffff", "0x1410")</p>
-<p>  NOT SourceImage IN (</p>
-<p>    "<em>\\csrss.exe", "</em>\\lsm.exe", "*\\wmiprvse.exe",</p>
-<p>    "<em>\\svchost.exe", "</em>\\MsMpEng.exe"</p>
-<p>  )</p>
-<p>| stats count by SourceImage GrantedAccess Computer User</p>
-<p>| sort - count</p>
+<p>index=windows sourcetype=WinEventLog:Sysmon EventCode=10
+  TargetImage="*\\lsass.exe"
+  GrantedAccess IN ("0x1010", "0x1038", "0x1fffff", "0x1410")
+  NOT SourceImage IN (
+    "<em>\\csrss.exe", "</em>\\lsm.exe", "*\\wmiprvse.exe",
+    "<em>\\svchost.exe", "</em>\\MsMpEng.exe"
+  )
+| stats count by SourceImage GrantedAccess Computer User
+| sort - count</p>
 <pre><code>
 ### Query 2: Suspicious Modules Loaded into LSASS
 </code></pre>
-<p>index=windows sourcetype=WinEventLog:Sysmon EventCode=7</p>
-<p>  Image="*\\lsass.exe"</p>
-<p>  NOT ImageLoaded IN ("<em>\\Windows\\System32\\</em>", "<em>\\Windows\\SysWOW64\\</em>")</p>
-<p>| stats count values(ImageLoaded) as SuspiciousModules by Computer</p>
+<p>index=windows sourcetype=WinEventLog:Sysmon EventCode=7
+  Image="*\\lsass.exe"
+  NOT ImageLoaded IN ("<em>\\Windows\\System32\\</em>", "<em>\\Windows\\SysWOW64\\</em>")
+| stats count values(ImageLoaded) as SuspiciousModules by Computer</p>
 <pre><code>
 ## Expected Outcomes
 - **True positive indicators**: Non-system processes accessing LSASS with
@@ -547,7 +547,6 @@ lifecycle:
 </ul>
 <hr>
 <p><strong>Instructions Reference</strong>: Your detailed detection engineering methodology is in your core training — refer to MITRE ATT&CK framework, Sigma rule specification, Palantir Alerting and Detection Strategy framework, and the SANS Detection Engineering curriculum for complete guidance.</p>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/engineering/engineering-threat-detection-engineer.md" target="_blank">View source on GitHub</a>

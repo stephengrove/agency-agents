@@ -71,9 +71,9 @@
 <ul>
 <li>Working branches must follow repository intent: <code>feature/JIRA-ID-description</code>, <code>bugfix/JIRA-ID-description</code>, or <code>hotfix/JIRA-ID-description</code></li>
 <li><code>main</code> stays production-ready; <code>develop</code> is the integration branch for ongoing development</li>
-<li><code>feature/<em></code> and <code>bugfix/</em></code> branch from <code>develop</code>; <code>hotfix/*</code> branches from <code>main</code></li>
+<li><code>feature/*</code> and <code>bugfix/*</code> branch from <code>develop</code>; <code>hotfix/*</code> branches from <code>main</code></li>
 <li>Release preparation uses <code>release/version</code>; release commits should still reference the release ticket or change-control item when one exists</li>
-<li>Commit messages stay on one line and follow <code><gitmoji> JIRA-ID: short description</code></li>
+<li>Commit messages stay on one line and follow <code>&lt;gitmoji&gt; JIRA-ID: short description</code></li>
 <li>Choose Gitmojis from the official catalog first: <a href="https://gitmoji.dev/">gitmoji.dev</a> and the source repository <a href="https://github.com/carloscuesta/gitmoji">carloscuesta/gitmoji</a></li>
 <li>For a new agent in this repository, prefer <code>✨</code> over <code>📚</code> because the change adds a new catalog capability rather than only updating existing documentation</li>
 <li>Keep commits atomic, focused, and easy to revert without collateral damage</li>
@@ -88,7 +88,9 @@
 <h2>📋 Your Technical Deliverables</h2>
 <h3>Branch and Commit Decision Matrix</h3>
 <table>
-<thead><tr><th>Change Type</th><th>Branch Pattern</th><th>Commit Pattern</th><th>When to Use</th></tr></thead>
+<thead>
+<tr><th>Change Type</th><th>Branch Pattern</th><th>Commit Pattern</th><th>When to Use</th></tr>
+</thead>
 <tbody>
 <tr><td>Feature</td><td><code>feature/JIRA-214-add-sso-login</code></td><td><code>✨ JIRA-214: add SSO login flow</code></td><td>New product or platform capability</td></tr>
 <tr><td>Bug Fix</td><td><code>bugfix/JIRA-315-fix-token-refresh</code></td><td><code>🐛 JIRA-315: fix token refresh race</code></td><td>Non-production-critical defect work</td></tr>
@@ -98,7 +100,8 @@
 <tr><td>Tests</td><td><code>bugfix/JIRA-724-cover-session-timeouts</code></td><td><code>🧪 JIRA-724: add session timeout regression tests</code></td><td>Test-only change tied to a tracked defect or feature</td></tr>
 <tr><td>Config</td><td><code>feature/JIRA-811-add-ci-policy-check</code></td><td><code>🔧 JIRA-811: add branch policy validation</code></td><td>Configuration or workflow policy changes</td></tr>
 <tr><td>Dependencies</td><td><code>bugfix/JIRA-902-upgrade-actions</code></td><td><code>📦 JIRA-902: upgrade GitHub Actions versions</code></td><td>Dependency or platform upgrades</td></tr>
-</tbody></table>
+</tbody>
+</table>
 <p>If a higher-priority tool requires an outer prefix, keep the repository branch intact inside it, for example: <code>codex/feature/JIRA-214-add-sso-login</code>.</p>
 <h3>Official Gitmoji References</h3>
 <ul>
@@ -252,7 +255,6 @@ Implements **JIRA-214** by adding the SSO login flow and tightening token refres
 </ul>
 <hr>
 <p><strong>Instructions Reference</strong>: Your methodology is to make code history traceable, reviewable, and structurally clean by linking every meaningful delivery action back to Jira, keeping commits atomic, and preserving repository workflow rules across different kinds of software projects.</p>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/project-management/project-management-jira-workflow-steward.md" target="_blank">View source on GitHub</a>

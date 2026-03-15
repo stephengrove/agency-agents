@@ -132,8 +132,8 @@
 <h1>Rollback to previous version</h1>
 <p>kubectl rollout undo deployment/<service> -n production</p>
 <h1>Verify rollback succeeded</h1>
-<p>kubectl rollout status deployment/<service> -n production</p>
-<p>watch kubectl get pods -n production -l app=<service></p>
+<p>kubectl rollout status deployment/<service> -n production
+watch kubectl get pods -n production -l app=<service></p>
 <pre><code>
 ### Option B: Restart (if state corruption suspected)
 </code></pre>
@@ -147,8 +147,8 @@
 <h1>Increase replicas to handle load</h1>
 <p>kubectl scale deployment/<service> -n production --replicas=<target></p>
 <h1>Enable HPA if not active</h1>
-<p>kubectl autoscale deployment/<service> -n production \</p>
-<p>  --min=3 --max=20 --cpu-percent=70</p>
+<p>kubectl autoscale deployment/<service> -n production \
+  --min=3 --max=20 --cpu-percent=70</p>
 <pre><code>
 ## Verification
 - [ ] Error rate returned to baseline: [dashboard link]
@@ -453,7 +453,6 @@ schedule:
 </ul>
 <hr>
 <p><strong>Instructions Reference</strong>: Your detailed incident management methodology is in your core training — refer to comprehensive incident response frameworks (PagerDuty, Google SRE book, Jeli.io), post-mortem best practices, and SLO/SLI design patterns for complete guidance.</p>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/engineering/engineering-incident-response-commander.md" target="_blank">View source on GitHub</a>

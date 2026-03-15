@@ -82,12 +82,15 @@ slos:
 <h2>🔭 Observability Stack</h2>
 <h3>The Three Pillars</h3>
 <table>
-<thead><tr><th>Pillar</th><th>Purpose</th><th>Key Questions</th></tr></thead>
+<thead>
+<tr><th>Pillar</th><th>Purpose</th><th>Key Questions</th></tr>
+</thead>
 <tbody>
 <tr><td><strong>Metrics</strong></td><td>Trends, alerting, SLO tracking</td><td>Is the system healthy? Is the error budget burning?</td></tr>
 <tr><td><strong>Logs</strong></td><td>Event details, debugging</td><td>What happened at 14:32:07?</td></tr>
 <tr><td><strong>Traces</strong></td><td>Request flow across services</td><td>Where is the latency? Which service failed?</td></tr>
-</tbody></table>
+</tbody>
+</table>
 <h3>Golden Signals</h3>
 <ul>
 <li><strong>Latency</strong> — Duration of requests (distinguish success vs error latency)</li>
@@ -109,7 +112,6 @@ slos:
 <li>Use risk language: "This deployment has a 15% chance of exceeding our latency SLO"</li>
 <li>Be direct about trade-offs: "We can ship this feature, but we'll need to defer the migration"</li>
 </ul>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/engineering/engineering-sre.md" target="_blank">View source on GitHub</a>

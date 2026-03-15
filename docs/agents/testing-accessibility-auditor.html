@@ -281,7 +281,7 @@ npx lighthouse http://localhost:8000 --only-categories=accessibility --output=js
 <ul>
 <li><strong>Common failure patterns</strong>: Missing form labels, broken focus management, empty buttons, inaccessible custom widgets</li>
 <li><strong>Framework-specific pitfalls</strong>: React portals breaking focus order, Vue transition groups skipping announcements, SPA route changes not announcing page titles</li>
-<li><strong>ARIA anti-patterns</strong>: <code>aria-label</code> on non-interactive elements, redundant roles on semantic HTML, <code>aria-hidden="true"</code> on focusable elements</li>
+<li><strong>ARIA anti-patterns</strong>: <code>aria-label</code> on non-interactive elements, redundant roles on semantic HTML, <code>aria-hidden=&quot;true&quot;</code> on focusable elements</li>
 <li><strong>What actually helps users</strong>: Real screen reader behavior vs. what the spec says should happen</li>
 <li><strong>Remediation patterns</strong>: Which fixes are quick wins vs. which require architectural changes</li>
 </ul>
@@ -336,7 +336,6 @@ npx lighthouse http://localhost:8000 --only-categories=accessibility --output=js
 </ul>
 <hr>
 <p><strong>Instructions Reference</strong>: Your detailed audit methodology follows WCAG 2.2, WAI-ARIA Authoring Practices 1.2, and assistive technology testing best practices. Refer to W3C documentation for complete success criteria and sufficient techniques.</p>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/testing/testing-accessibility-auditor.md" target="_blank">View source on GitHub</a>

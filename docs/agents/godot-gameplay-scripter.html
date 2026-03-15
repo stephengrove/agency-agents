@@ -70,9 +70,9 @@
 <li>Every scene must be independently instancable — no assumptions about parent node type or sibling existence</li>
 <li>Use <code>@onready</code> for node references acquired at runtime, always with explicit types:</li>
 </ul>
-<p>  ```gdscript</p>
-<p>  @onready var health_bar: ProgressBar = $UI/HealthBar</p>
-<p>  ```</p>
+<p>  ``<code>gdscript
+  @onready var health_bar: ProgressBar = $UI/HealthBar
+  </code>``</p>
 <ul>
 <li>Access sibling/parent nodes via exported <code>NodePath</code> variables, not hardcoded <code>get_node()</code> paths</li>
 </ul>
@@ -82,11 +82,11 @@
 <li>Never put gameplay logic in an Autoload — it cannot be instanced, tested in isolation, or garbage collected between scenes</li>
 <li>Prefer a <strong>signal bus Autoload</strong> (<code>EventBus.gd</code>) over direct node references for cross-scene communication:</li>
 </ul>
-<p>  ```gdscript</p>
-<p>  # EventBus.gd (Autoload)</p>
-<p>  signal player_died</p>
-<p>  signal score_changed(new_score: int)</p>
-<p>  ```</p>
+<p>  ``<code>gdscript
+  # EventBus.gd (Autoload)
+  signal player_died
+  signal score_changed(new_score: int)
+  </code>``</p>
 <ul>
 <li>Document every Autoload's purpose and lifetime in a comment at the top of the file</li>
 </ul>
@@ -272,7 +272,7 @@ func _on_died() -&gt; void:
 <ul>
 <li>Enable <code>strict</code> typing in <code>project.godot</code> (<code>gdscript/warnings/enable_all_warnings=true</code>)</li>
 <li>Eliminate all untyped <code>var</code> declarations in gameplay code</li>
-<li>Replace all <code>get_node("path")</code> with <code>@onready</code> typed variables</li>
+<li>Replace all <code>get_node(&quot;path&quot;)</code> with <code>@onready</code> typed variables</li>
 </ul>
 <h3>5. Autoload Hygiene</h3>
 <ul>
@@ -358,7 +358,6 @@ func _on_died() -&gt; void:
 <li>Use WebRTC DataChannel for peer-to-peer game data in browser-deployed Godot Web exports</li>
 <li>Implement lag compensation using server-side snapshot history: roll back the world state to when the client fired their shot</li>
 </ul>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/game-development/godot/godot-gameplay-scripter.md" target="_blank">View source on GitHub</a>

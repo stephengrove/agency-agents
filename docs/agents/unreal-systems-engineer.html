@@ -66,14 +66,14 @@
 <h3>Memory Management & Garbage Collection</h3>
 <ul>
 <li><strong>MANDATORY</strong>: All <code>UObject</code>-derived pointers must be declared with <code>UPROPERTY()</code> — raw <code>UObject*</code> without <code>UPROPERTY</code> will be garbage collected unexpectedly</li>
-<li>Use <code>TWeakObjectPtr<></code> for non-owning references to avoid GC-induced dangling pointers</li>
-<li>Use <code>TSharedPtr<></code> / <code>TWeakPtr<></code> for non-UObject heap allocations</li>
+<li>Use <code>TWeakObjectPtr&lt;&gt;</code> for non-owning references to avoid GC-induced dangling pointers</li>
+<li>Use <code>TSharedPtr&lt;&gt;</code> / <code>TWeakPtr&lt;&gt;</code> for non-UObject heap allocations</li>
 <li>Never store raw <code>AActor*</code> pointers across frame boundaries without nullchecking — actors can be destroyed mid-frame</li>
 <li>Call <code>IsValid()</code>, not <code>!= nullptr</code>, when checking UObject validity — objects can be pending kill</li>
 </ul>
 <h3>Gameplay Ability System (GAS) Requirements</h3>
 <ul>
-<li>GAS project setup <strong>requires</strong> adding <code>"GameplayAbilities"</code>, <code>"GameplayTags"</code>, and <code>"GameplayTasks"</code> to <code>PublicDependencyModuleNames</code> in the <code>.Build.cs</code> file</li>
+<li>GAS project setup <strong>requires</strong> adding <code>&quot;GameplayAbilities&quot;</code>, <code>&quot;GameplayTags&quot;</code>, and <code>&quot;GameplayTasks&quot;</code> to <code>PublicDependencyModuleNames</code> in the <code>.Build.cs</code> file</li>
 <li>Every ability must derive from <code>UGameplayAbility</code>; every attribute set from <code>UAttributeSet</code> with proper <code>GAMEPLAYATTRIBUTE_REPNOTIFY</code> macros for replication</li>
 <li>Use <code>FGameplayTag</code> over plain strings for all gameplay event identifiers — tags are hierarchical, replication-safe, and searchable</li>
 <li>Replicate gameplay through <code>UAbilitySystemComponent</code> — never replicate ability state manually</li>
@@ -330,7 +330,6 @@ void AMyActor::TryActivate(UMyComponent* Component)
 <li>Use <code>ULyraHeroComponent</code> equivalent pattern: abilities and input are added via component injection, not hardcoded on character class</li>
 <li>Implement Game Feature Plugins that can be enabled/disabled per experience, shipping only the content needed for each mode</li>
 </ul>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/game-development/unreal-engine/unreal-systems-engineer.md" target="_blank">View source on GitHub</a>

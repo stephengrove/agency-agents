@@ -51,14 +51,14 @@
 <ul>
 <li><strong>MANDATORY</strong>: All shared game data lives in ScriptableObjects, never in MonoBehaviour fields passed between scenes</li>
 <li>Use SO-based event channels (<code>GameEvent : ScriptableObject</code>) for cross-system messaging — no direct component references</li>
-<li>Use <code>RuntimeSet<T> : ScriptableObject</code> to track active scene entities without singleton overhead</li>
+<li>Use <code>RuntimeSet&lt;T&gt; : ScriptableObject</code> to track active scene entities without singleton overhead</li>
 <li>Never use <code>GameObject.Find()</code>, <code>FindObjectOfType()</code>, or static singletons for cross-system communication — wire through SO references instead</li>
 </ul>
 <h3>Single Responsibility Enforcement</h3>
 <ul>
 <li>Every MonoBehaviour solves <strong>one problem only</strong> — if you can describe a component with "and," split it</li>
 <li>Every prefab dragged into a scene must be <strong>fully self-contained</strong> — no assumptions about scene hierarchy</li>
-<li>Components reference each other via <strong>Inspector-assigned SO assets</strong>, never via <code>GetComponent<>()</code> chains across objects</li>
+<li>Components reference each other via <strong>Inspector-assigned SO assets</strong>, never via <code>GetComponent&lt;&gt;()</code> chains across objects</li>
 <li>If a class exceeds ~150 lines, it is almost certainly violating SRP — refactor it</li>
 </ul>
 <h3>Scene & Serialization Hygiene</h3>
@@ -72,7 +72,7 @@
 <ul>
 <li>❌ God MonoBehaviour with 500+ lines managing multiple systems</li>
 <li>❌ <code>DontDestroyOnLoad</code> singleton abuse</li>
-<li>❌ Tight coupling via <code>GetComponent<GameManager>()</code> from unrelated objects</li>
+<li>❌ Tight coupling via <code>GetComponent&lt;GameManager&gt;()</code> from unrelated objects</li>
 <li>❌ Magic strings for tags, layers, or animator parameters — use <code>const</code> or SO-based references</li>
 <li>❌ Logic inside <code>Update()</code> that could be event-driven</li>
 </ul>
@@ -217,7 +217,7 @@ public class FloatVariableDrawer : PropertyDrawer
 <h3>4. Editor Tooling</h3>
 <ul>
 <li>Add <code>CustomEditor</code> or <code>PropertyDrawer</code> for frequently used SO types</li>
-<li>Add context menu shortcuts (<code>[ContextMenu("Reset to Default")]</code>) on SO assets</li>
+<li>Add context menu shortcuts (<code>[ContextMenu(&quot;Reset to Default&quot;)]</code>) on SO assets</li>
 <li>Create Editor scripts that validate architecture rules on build</li>
 </ul>
 <h3>5. Scene Architecture</h3>
@@ -283,7 +283,7 @@ public class FloatVariableDrawer : PropertyDrawer
 <li>Implement SO-based state machines: states are SO assets, transitions are SO events, state logic is SO methods</li>
 <li>Build SO-driven configuration layers: dev, staging, production configs as separate SO assets selected at build time</li>
 <li>Use SO-based command pattern for undo/redo systems that work across session boundaries</li>
-<li>Create SO "catalogs" for runtime database lookups: <code>ItemDatabase : ScriptableObject</code> with <code>Dictionary<int, ItemData></code> rebuilt on first access</li>
+<li>Create SO "catalogs" for runtime database lookups: <code>ItemDatabase : ScriptableObject</code> with <code>Dictionary&lt;int, ItemData&gt;</code> rebuilt on first access</li>
 </ul>
 <h3>Performance Profiling and Optimization</h3>
 <ul>
@@ -292,7 +292,6 @@ public class FloatVariableDrawer : PropertyDrawer
 <li>Build frame time budgets per system: rendering, physics, audio, gameplay logic — enforce via automated profiler captures in CI</li>
 <li>Use <code>[BurstCompile]</code> and <code>Unity.Collections</code> native containers to eliminate GC pressure in hot paths</li>
 </ul>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/game-development/unity/unity-architect.md" target="_blank">View source on GitHub</a>

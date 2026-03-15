@@ -1,36 +1,44 @@
 #!/usr/bin/env node
+"use strict";
+
 /**
  * Static site generator for Agency Agents.
  * Zero dependencies — uses only Node.js built-ins.
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 const ROOT = __dirname;
-const DOCS_DIR = path.join(ROOT, 'docs');
-const AGENTS_DIR = path.join(DOCS_DIR, 'agents');
+const DOCS_DIR = path.join(ROOT, "docs");
+const AGENTS_DIR = path.join(DOCS_DIR, "agents");
 
-const SKIP_DIRS = new Set(['.git', '.github', 'docs', 'scripts', 'examples', '__pycache__', 'node_modules']);
-const SKIP_FILES = new Set(['README.md', 'CONTRIBUTING.md', 'LICENSE']);
+// Directories to scan for agent .md files
+const SKIP_DIRS = new Set([".git", ".github", "docs", "scripts", "examples", "__pycache__"]);
+const SKIP_FILES = new Set(["README.md", "CONTRIBUTING.md", "LICENSE"]);
 
+// Category display names and icons
 const CATEGORY_META = {
-  'design': ['Design', '🎨'],
-  'engineering': ['Engineering', '⚙️'],
-  'examples': ['Examples', '📝'],
-  'game-development': ['Game Development', '🎮'],
-  'integrations': ['Integrations', '🔗'],
-  'marketing': ['Marketing', '📢'],
-  'paid-media': ['Paid Media', '💰'],
-  'product': ['Product', '📦'],
-  'project-management': ['Project Management', '📋'],
-  'sales': ['Sales', '💼'],
-  'spatial-computing': ['Spatial Computing', '🥽'],
-  'specialized': ['Specialized', '🔧'],
-  'strategy': ['Strategy', '♟️'],
-  'support': ['Support', '🤝'],
-  'testing': ['Testing', '🧪'],
+  design: ["Design", "\u{1F3A8}"],
+  engineering: ["Engineering", "\u2699\uFE0F"],
+  examples: ["Examples", "\u{1F4DD}"],
+  "game-development": ["Game Development", "\u{1F3AE}"],
+  integrations: ["Integrations", "\u{1F517}"],
+  marketing: ["Marketing", "\u{1F4E2}"],
+  "paid-media": ["Paid Media", "\u{1F4B0}"],
+  product: ["Product", "\u{1F4E6}"],
+  "project-management": ["Project Management", "\u{1F4CB}"],
+  sales: ["Sales", "\u{1F4BC}"],
+  "spatial-computing": ["Spatial Computing", "\u{1F97D}"],
+  specialized: ["Specialized", "\u{1F527}"],
+  strategy: ["Strategy", "\u265F\uFE0F"],
+  support: ["Support", "\u{1F91D}"],
+  testing: ["Testing", "\u{1F9EA}"],
 };
+
+// ---------------------------------------------------------------------------
+// YAML frontmatter parser
+// ---------------------------------------------------------------------------
 
 function parseFrontmatter(text) {
   const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n/);
@@ -38,218 +46,263 @@ function parseFrontmatter(text) {
   const fmText = match[1];
   const body = text.slice(match[0].length);
   const meta = {};
-  for (const line of fmText.split('\n')) {
-    const idx = line.indexOf(':');
+  for (const line of fmText.split("\n")) {
+    const idx = line.indexOf(":");
     if (idx !== -1) {
       const key = line.slice(0, idx).trim();
-      const val = line.slice(idx + 1).trim().replace(/^["']|["']$/g, '');
+      let val = line.slice(idx + 1).trim();
+      val = val.replace(/^["']|["']$/g, "");
       meta[key] = val;
     }
   }
   return [meta, body];
 }
 
+// ---------------------------------------------------------------------------
+// Simple Markdown to HTML converter
+// Handles: headings, bold, italic, links, fenced code blocks, inline code,
+// unordered lists, ordered lists, blockquotes, tables, horizontal rules.
+// ---------------------------------------------------------------------------
+
 function escapeHtml(s) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function inlineFormat(text) {
+  // Inline code spans first (protect from further processing)
+  const codes = [];
+  text = text.replace(/`([^`]+)`/g, (_, code) => {
+    codes.push(`<code>${escapeHtml(code)}</code>`);
+    return `\x00CODE${codes.length - 1}\x00`;
+  });
+
+  // Bold + italic
+  text = text.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
+  text = text.replace(/___(.+?)___/g, "<strong><em>$1</em></strong>");
+  // Bold
+  text = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  text = text.replace(/__(.+?)__/g, "<strong>$1</strong>");
+  // Italic
+  text = text.replace(/\*(.+?)\*/g, "<em>$1</em>");
+  text = text.replace(/_(.+?)_/g, "<em>$1</em>");
+  // Links
+  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+
+  // Restore inline code
+  text = text.replace(/\x00CODE(\d+)\x00/g, (_, i) => codes[parseInt(i)]);
+
+  return text;
 }
 
 function markdownToHtml(md) {
-  let html = '';
-  const lines = md.split('\n');
+  const lines = md.split("\n");
+  const out = [];
   let i = 0;
-  let inList = false;
-  let listType = '';
-  let inBlockquote = false;
-
-  function closeList() {
-    if (inList) {
-      html += listType === 'ul' ? '</ul>\n' : '</ol>\n';
-      inList = false;
-    }
-  }
-
-  function closeBlockquote() {
-    if (inBlockquote) {
-      html += '</blockquote>\n';
-      inBlockquote = false;
-    }
-  }
-
-  function inlineFormat(text) {
-    // Code spans first
-    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
-    // Bold+italic
-    text = text.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
-    // Bold
-    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-    // Italic
-    text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
-    // Links
-    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
-    return text;
-  }
 
   while (i < lines.length) {
     const line = lines[i];
 
     // Fenced code blocks
-    if (line.match(/^```/)) {
-      closeList();
-      closeBlockquote();
-      const lang = line.slice(3).trim();
-      let code = '';
+    if (/^```/.test(line)) {
       i++;
-      while (i < lines.length && !lines[i].match(/^```/)) {
-        code += escapeHtml(lines[i]) + '\n';
+      let code = "";
+      while (i < lines.length && !/^```/.test(lines[i])) {
+        code += escapeHtml(lines[i]) + "\n";
         i++;
       }
-      html += `<pre><code>${code}</code></pre>\n`;
-      i++;
+      if (i < lines.length) i++; // skip closing ```
+      out.push(`<pre><code>${code}</code></pre>`);
       continue;
     }
 
     // Blank line
-    if (line.trim() === '') {
-      closeList();
-      closeBlockquote();
-      i++;
-      continue;
-    }
-
-    // Headings
-    const headingMatch = line.match(/^(#{1,6})\s+(.+)/);
-    if (headingMatch) {
-      closeList();
-      closeBlockquote();
-      const level = headingMatch[1].length;
-      html += `<h${level}>${inlineFormat(headingMatch[2])}</h${level}>\n`;
+    if (line.trim() === "") {
       i++;
       continue;
     }
 
     // Horizontal rule
-    if (line.match(/^(-{3,}|\*{3,}|_{3,})\s*$/)) {
-      closeList();
-      closeBlockquote();
-      html += '<hr>\n';
+    if (/^(-{3,}|\*{3,}|_{3,})\s*$/.test(line.trim())) {
+      out.push("<hr>");
       i++;
       continue;
     }
 
-    // Table
-    if (line.includes('|') && i + 1 < lines.length && lines[i + 1].match(/^\|?\s*[-:]+[-| :]*$/)) {
-      closeList();
-      closeBlockquote();
-      const headerCells = line.split('|').map(c => c.trim()).filter(c => c !== '');
-      html += '<table>\n<thead><tr>';
-      for (const cell of headerCells) {
-        html += `<th>${inlineFormat(cell)}</th>`;
+    // Headings
+    const headingMatch = line.match(/^(#{1,6})\s+(.*)/);
+    if (headingMatch) {
+      const level = headingMatch[1].length;
+      out.push(`<h${level}>${inlineFormat(headingMatch[2])}</h${level}>`);
+      i++;
+      continue;
+    }
+
+    // Table: header row followed by separator row
+    if (
+      line.includes("|") &&
+      i + 1 < lines.length &&
+      /^\|?\s*[-:]+[-| :]*$/.test(lines[i + 1])
+    ) {
+      const parseRow = (r) =>
+        r
+          .replace(/^\|/, "")
+          .replace(/\|$/, "")
+          .split("|")
+          .map((c) => c.trim());
+      const headers = parseRow(line);
+      let html = "<table>\n<thead>\n<tr>";
+      for (const h of headers) {
+        html += `<th>${inlineFormat(h)}</th>`;
       }
-      html += '</tr></thead>\n<tbody>\n';
-      i += 2; // skip header and separator
-      while (i < lines.length && lines[i].includes('|') && lines[i].trim() !== '') {
-        const cells = lines[i].split('|').map(c => c.trim()).filter(c => c !== '');
-        html += '<tr>';
-        for (const cell of cells) {
-          html += `<td>${inlineFormat(cell)}</td>`;
+      html += "</tr>\n</thead>\n<tbody>\n";
+      i += 2; // skip header + separator
+      while (i < lines.length && lines[i].includes("|") && lines[i].trim() !== "") {
+        const cells = parseRow(lines[i]);
+        html += "<tr>";
+        for (let ci = 0; ci < headers.length; ci++) {
+          html += `<td>${inlineFormat(cells[ci] || "")}</td>`;
         }
-        html += '</tr>\n';
+        html += "</tr>\n";
         i++;
       }
-      html += '</tbody></table>\n';
+      html += "</tbody>\n</table>";
+      out.push(html);
       continue;
     }
 
     // Blockquote
-    const bqMatch = line.match(/^>\s?(.*)/);
-    if (bqMatch) {
-      closeList();
-      if (!inBlockquote) {
-        html += '<blockquote>\n';
-        inBlockquote = true;
+    if (/^>\s?/.test(line)) {
+      const bqLines = [];
+      let j = i;
+      while (j < lines.length && /^>/.test(lines[j])) {
+        bqLines.push(lines[j].replace(/^>\s?/, ""));
+        j++;
       }
-      html += `<p>${inlineFormat(bqMatch[1])}</p>\n`;
-      i++;
+      out.push(
+        "<blockquote>\n<p>" + inlineFormat(bqLines.join("\n")) + "</p>\n</blockquote>"
+      );
+      i = j;
       continue;
     }
 
     // Unordered list
-    const ulMatch = line.match(/^(\s*)[-*+]\s+(.*)/);
-    if (ulMatch) {
-      closeBlockquote();
-      if (!inList || listType !== 'ul') {
-        closeList();
-        html += '<ul>\n';
-        inList = true;
-        listType = 'ul';
+    if (/^\s*[-*+]\s/.test(line)) {
+      let html = "<ul>\n";
+      while (i < lines.length && /^\s*[-*+]\s/.test(lines[i])) {
+        html += `<li>${inlineFormat(lines[i].replace(/^\s*[-*+]\s/, ""))}</li>\n`;
+        i++;
       }
-      html += `<li>${inlineFormat(ulMatch[2])}</li>\n`;
-      i++;
+      html += "</ul>";
+      out.push(html);
       continue;
     }
 
     // Ordered list
-    const olMatch = line.match(/^(\s*)\d+\.\s+(.*)/);
-    if (olMatch) {
-      closeBlockquote();
-      if (!inList || listType !== 'ol') {
-        closeList();
-        html += '<ol>\n';
-        inList = true;
-        listType = 'ol';
+    if (/^\s*\d+\.\s/.test(line)) {
+      let html = "<ol>\n";
+      while (i < lines.length && /^\s*\d+\.\s/.test(lines[i])) {
+        html += `<li>${inlineFormat(lines[i].replace(/^\s*\d+\.\s/, ""))}</li>\n`;
+        i++;
       }
-      html += `<li>${inlineFormat(olMatch[2])}</li>\n`;
-      i++;
+      html += "</ol>";
+      out.push(html);
       continue;
     }
 
-    // Paragraph
-    closeList();
-    closeBlockquote();
-    html += `<p>${inlineFormat(line)}</p>\n`;
-    i++;
+    // Paragraph: collect consecutive non-blank, non-special lines
+    {
+      const pLines = [];
+      while (i < lines.length) {
+        const l = lines[i];
+        if (l.trim() === "") break;
+        if (/^#{1,6}\s/.test(l)) break;
+        if (/^```/.test(l)) break;
+        if (/^>\s?/.test(l)) break;
+        if (/^\s*[-*+]\s/.test(l) && pLines.length > 0) break;
+        if (/^\s*\d+\.\s/.test(l) && pLines.length > 0) break;
+        if (/^(-{3,}|\*{3,}|_{3,})\s*$/.test(l.trim())) break;
+        if (l.includes("|") && i + 1 < lines.length && /^\|?\s*[-:]+[-| :]*$/.test(lines[i + 1])) break;
+        pLines.push(l);
+        i++;
+      }
+      if (pLines.length > 0) {
+        out.push(`<p>${inlineFormat(pLines.join("\n"))}</p>`);
+      }
+    }
   }
 
-  closeList();
-  closeBlockquote();
-  return html;
+  return out.join("\n");
 }
 
-function walkDir(dir, agents, rootDir) {
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-  for (const entry of entries) {
-    if (entry.isDirectory()) {
-      if (SKIP_DIRS.has(entry.name)) continue;
-      walkDir(path.join(dir, entry.name), agents, rootDir);
-    } else if (entry.isFile() && entry.name.endsWith('.md') && !SKIP_FILES.has(entry.name)) {
-      const filepath = path.join(dir, entry.name);
-      const rel = path.relative(rootDir, dir);
+// ---------------------------------------------------------------------------
+// Agent collection
+// ---------------------------------------------------------------------------
+
+function collectAgents() {
+  const agents = [];
+
+  function walk(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+    // Sort entries for deterministic output (matches Python's sorted(filenames))
+    const dirs = [];
+    const files = [];
+    for (const e of entries) {
+      if (e.isDirectory()) {
+        if (!SKIP_DIRS.has(e.name)) dirs.push(e);
+      } else if (e.isFile()) {
+        files.push(e);
+      }
+    }
+    dirs.sort((a, b) => a.name.localeCompare(b.name));
+    files.sort((a, b) => a.name.localeCompare(b.name));
+
+    for (const f of files) {
+      if (!f.name.endsWith(".md") || SKIP_FILES.has(f.name)) continue;
+
+      const filepath = path.join(dir, f.name);
+      const rel = path.relative(ROOT, dir);
       const parts = rel.split(path.sep);
-      if (!parts[0] || rel === '.') continue;
+      if (!parts[0] || rel === ".") continue; // skip top-level
 
       const category = parts[0];
-      const subcategory = parts.length > 1 ? parts.slice(1).join('/') : null;
+      const subcategory = parts.length > 1 ? parts.slice(1).join("/") : null;
 
-      const text = fs.readFileSync(filepath, 'utf-8');
+      const text = fs.readFileSync(filepath, "utf-8");
       const [meta, body] = parseFrontmatter(text);
-      if (!meta.name) return;
+      if (!meta.name) continue;
 
-      const slug = entry.name.replace('.md', '');
+      const slug = f.name.replace(/\.md$/, "");
       agents.push({
         name: meta.name || slug,
-        description: meta.description || '',
-        color: meta.color || '#6366f1',
-        emoji: meta.emoji || '🤖',
-        vibe: meta.vibe || '',
+        description: meta.description || "",
+        color: meta.color || "#6366f1",
+        emoji: meta.emoji || "\u{1F916}",
+        vibe: meta.vibe || "",
         category,
         subcategory,
         slug,
         body_html: markdownToHtml(body),
-        source_path: path.relative(rootDir, filepath),
+        source_path: path.relative(ROOT, filepath).split(path.sep).join("/"),
       });
     }
+
+    for (const d of dirs) {
+      walk(path.join(dir, d.name));
+    }
   }
+
+  walk(ROOT);
+  return agents;
 }
+
+// ---------------------------------------------------------------------------
+// CSS (identical to Python version)
+// ---------------------------------------------------------------------------
 
 const CSS = `\
 :root {
@@ -296,6 +349,7 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
 
 .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
 
+/* Search */
 .search-bar {
   width: 100%; padding: 0.75rem 1rem;
   background: var(--surface); border: 1px solid var(--border);
@@ -305,6 +359,7 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
 }
 .search-bar:focus { border-color: var(--accent); }
 
+/* Category filters */
 .filters {
   display: flex; flex-wrap: wrap; gap: 0.5rem;
   margin-bottom: 2rem;
@@ -319,12 +374,14 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
   background: var(--accent); color: #fff; border-color: var(--accent);
 }
 
+/* Stats */
 .stats {
   display: flex; gap: 1.5rem; margin-bottom: 2rem;
   color: var(--text-muted); font-size: 0.9rem;
 }
 .stats strong { color: var(--text); }
 
+/* Agent grid */
 .agent-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -366,6 +423,7 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
   width: fit-content;
 }
 
+/* Agent detail page */
 .back-link {
   display: inline-flex; align-items: center; gap: 0.3rem;
   color: var(--text-muted); margin-bottom: 1.5rem;
@@ -435,21 +493,36 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
 }
 `;
 
-function buildIndexPage(agents, categories) {
-  const agentsJson = JSON.stringify(agents.map(a => ({
-    name: a.name, description: a.description, emoji: a.emoji,
-    vibe: a.vibe, category: a.category, subcategory: a.subcategory,
-    slug: a.slug, color: a.color,
-  })));
+// ---------------------------------------------------------------------------
+// Page builders
+// ---------------------------------------------------------------------------
 
-  let filterButtons = '';
-  for (const cat of [...categories].sort()) {
-    const [label, icon] = CATEGORY_META[cat] || [cat.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), '📁'];
-    const count = agents.filter(a => a.category === cat).length;
+function buildIndexPage(agents, categories) {
+  const agentsJson = JSON.stringify(
+    agents.map((a) => ({
+      name: a.name,
+      description: a.description,
+      emoji: a.emoji,
+      vibe: a.vibe,
+      category: a.category,
+      subcategory: a.subcategory,
+      slug: a.slug,
+      color: a.color,
+    }))
+  );
+
+  let filterButtons = "";
+  for (const cat of categories) {
+    const [label, icon] = CATEGORY_META[cat] || [
+      cat.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+      "\u{1F4C1}",
+    ];
+    const count = agents.filter((a) => a.category === cat).length;
     filterButtons += `<button class="filter-btn" data-cat="${cat}">${icon} ${label} (${count})</button>\n`;
   }
 
-  return `<!DOCTYPE html>
+  return `\
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -461,7 +534,7 @@ function buildIndexPage(agents, categories) {
 <body>
 <div class="header">
   <div class="header-inner">
-    <h1>🎭 <span>The Agency</span></h1>
+    <h1>\u{1F3AD} <span>The Agency</span></h1>
     <div class="header-links">
       <a href="https://github.com/msitarzewski/agency-agents" target="_blank">GitHub</a>
     </div>
@@ -475,7 +548,7 @@ function buildIndexPage(agents, categories) {
   </div>
   <div class="stats" id="stats">
     <span><strong>${agents.length}</strong> agents</span>
-    <span><strong>${categories.size}</strong> categories</span>
+    <span><strong>${categories.length}</strong> categories</span>
   </div>
   <div class="agent-grid" id="grid"></div>
 </div>
@@ -536,8 +609,9 @@ renderAgents(agents);
 
 function buildAgentPage(agent) {
   const githubUrl = `https://github.com/msitarzewski/agency-agents/blob/main/${agent.source_path}`;
-  const subLabel = agent.subcategory ? ` / ${agent.subcategory}` : '';
-  return `<!DOCTYPE html>
+  const subLabel = agent.subcategory ? ` / ${agent.subcategory}` : "";
+  return `\
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -549,14 +623,14 @@ function buildAgentPage(agent) {
 <body>
 <div class="header">
   <div class="header-inner">
-    <h1><a href="../index.html" style="color:inherit;text-decoration:none">🎭 <span>The Agency</span></a></h1>
+    <h1><a href="../index.html" style="color:inherit;text-decoration:none">\u{1F3AD} <span>The Agency</span></a></h1>
     <div class="header-links">
       <a href="https://github.com/msitarzewski/agency-agents" target="_blank">GitHub</a>
     </div>
   </div>
 </div>
 <div class="container">
-  <a href="../index.html" class="back-link">← Back to all agents</a>
+  <a href="../index.html" class="back-link">\u2190 Back to all agents</a>
   <div class="agent-header">
     <div class="emoji">${agent.emoji}</div>
     <div class="info">
@@ -570,50 +644,56 @@ function buildAgentPage(agent) {
     ${agent.body_html}
   </div>
   <div class="agent-source">
-    📄 <a href="${githubUrl}" target="_blank">View source on GitHub</a>
+    \u{1F4C4} <a href="${githubUrl}" target="_blank">View source on GitHub</a>
   </div>
 </div>
 </body>
 </html>`;
 }
 
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
 function main() {
   // Clean output
   if (fs.existsSync(DOCS_DIR)) {
-    fs.rmSync(DOCS_DIR, { recursive: true });
+    fs.rmSync(DOCS_DIR, { recursive: true, force: true });
   }
   fs.mkdirSync(DOCS_DIR);
   fs.mkdirSync(AGENTS_DIR);
 
   // Collect agents
-  const agents = [];
-  walkDir(ROOT, agents, ROOT);
+  const agents = collectAgents();
   agents.sort((a, b) => {
-    const cmp = a.category.localeCompare(b.category);
-    if (cmp !== 0) return cmp;
-    const sub = (a.subcategory || '').localeCompare(b.subcategory || '');
-    if (sub !== 0) return sub;
+    if (a.category !== b.category) return a.category.localeCompare(b.category);
+    const subA = a.subcategory || "";
+    const subB = b.subcategory || "";
+    if (subA !== subB) return subA.localeCompare(subB);
     return a.name.localeCompare(b.name);
   });
-  const categories = new Set(agents.map(a => a.category));
+  const categories = [...new Set(agents.map((a) => a.category))].sort();
 
-  console.log(`Found ${agents.length} agents in ${categories.size} categories`);
+  console.log(`Found ${agents.length} agents in ${categories.length} categories`);
 
   // Write CSS
-  fs.writeFileSync(path.join(DOCS_DIR, 'style.css'), CSS);
-
-  // Write .nojekyll
-  fs.writeFileSync(path.join(DOCS_DIR, '.nojekyll'), '');
+  fs.writeFileSync(path.join(DOCS_DIR, "style.css"), CSS);
 
   // Write index
-  fs.writeFileSync(path.join(DOCS_DIR, 'index.html'), buildIndexPage(agents, categories));
+  fs.writeFileSync(
+    path.join(DOCS_DIR, "index.html"),
+    buildIndexPage(agents, categories)
+  );
 
   // Write agent pages
   for (const agent of agents) {
-    fs.writeFileSync(path.join(AGENTS_DIR, `${agent.slug}.html`), buildAgentPage(agent));
+    fs.writeFileSync(
+      path.join(AGENTS_DIR, `${agent.slug}.html`),
+      buildAgentPage(agent)
+    );
   }
 
-  console.log(`Site built in docs/`);
+  console.log(`Site built in ${DOCS_DIR}/`);
   console.log(`  - ${agents.length} agent pages`);
   console.log(`  - index.html with search and filtering`);
 }

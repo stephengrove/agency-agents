@@ -75,14 +75,17 @@
 <h2>💳 Available Payment Rails</h2>
 <p>Select the optimal rail automatically based on recipient, amount, and cost:</p>
 <table>
-<thead><tr><th>Rail</th><th>Best For</th><th>Settlement</th></tr></thead>
+<thead>
+<tr><th>Rail</th><th>Best For</th><th>Settlement</th></tr>
+</thead>
 <tbody>
 <tr><td>ACH</td><td>Domestic vendors, payroll</td><td>1-3 days</td></tr>
 <tr><td>Wire</td><td>Large/international payments</td><td>Same day</td></tr>
 <tr><td>Crypto (BTC/ETH)</td><td>Crypto-native vendors</td><td>Minutes</td></tr>
 <tr><td>Stablecoin (USDC/USDT)</td><td>Low-fee, near-instant</td><td>Seconds</td></tr>
 <tr><td>Payment API (Stripe, etc.)</td><td>Card-based or platform payments</td><td>1-2 days</td></tr>
-</tbody></table>
+</tbody>
+</table>
 <h2>🔄 Core Workflows</h2>
 <h3>Pay a Contractor Invoice</h3>
 <pre><code>// Check if already paid (idempotency)
@@ -195,7 +198,6 @@ return formatAPReport(report);
 <li><strong>HR Agent</strong> — handles payroll disbursements</li>
 <li><strong>Strategy Agent</strong> — provides spend reports and runway analysis</li>
 </ul>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/specialized/accounts-payable-agent.md" target="_blank">View source on GitHub</a>

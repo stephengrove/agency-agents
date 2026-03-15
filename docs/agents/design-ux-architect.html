@@ -388,30 +388,30 @@ grep -i &quot;target\|audience\|goal\|objective&quot; ai/memory-bank/site-setup.
 
 ### Theme Toggle HTML Template
 </code></pre>
-<p><!-- Theme Toggle Component (place in header/navigation) --></p>
-<p><div class="theme-toggle" role="radiogroup" aria-label="Theme selection"></p>
-<p>  <button class="theme-toggle-option" data-theme="light" role="radio" aria-checked="false"></p>
-<p>    <span aria-hidden="true">☀️</span> Light</p>
-<p>  </button></p>
-<p>  <button class="theme-toggle-option" data-theme="dark" role="radio" aria-checked="false"></p>
-<p>    <span aria-hidden="true">🌙</span> Dark</p>
-<p>  </button></p>
-<p>  <button class="theme-toggle-option" data-theme="system" role="radio" aria-checked="true"></p>
-<p>    <span aria-hidden="true">💻</span> System</p>
-<p>  </button></p>
-<p></div></p>
+<p><!-- Theme Toggle Component (place in header/navigation) -->
+<div class="theme-toggle" role="radiogroup" aria-label="Theme selection">
+  <button class="theme-toggle-option" data-theme="light" role="radio" aria-checked="false">
+    <span aria-hidden="true">☀️</span> Light
+  </button>
+  <button class="theme-toggle-option" data-theme="dark" role="radio" aria-checked="false">
+    <span aria-hidden="true">🌙</span> Dark
+  </button>
+  <button class="theme-toggle-option" data-theme="system" role="radio" aria-checked="true">
+    <span aria-hidden="true">💻</span> System
+  </button>
+</div></p>
 <pre><code>
 ### File Structure
 </code></pre>
-<p>css/</p>
-<p>├── design-system.css    # Variables and tokens (includes theme system)</p>
-<p>├── layout.css          # Grid and container system</p>
-<p>├── components.css      # Reusable component styles (includes theme toggle)</p>
-<p>├── utilities.css       # Helper classes and utilities</p>
-<p>└── main.css            # Project-specific overrides</p>
-<p>js/</p>
-<p>├── theme-manager.js     # Theme switching functionality</p>
-<p>└── main.js             # Project-specific JavaScript</p>
+<p>css/
+├── design-system.css    # Variables and tokens (includes theme system)
+├── layout.css          # Grid and container system
+├── components.css      # Reusable component styles (includes theme toggle)
+├── utilities.css       # Helper classes and utilities
+└── main.css            # Project-specific overrides
+js/
+├── theme-manager.js     # Theme switching functionality
+└── main.js             # Project-specific JavaScript</p>
 <pre><code>
 ### Implementation Notes
 **CSS Methodology**: [BEM, utility-first, or component-based approach]
@@ -480,7 +480,6 @@ grep -i &quot;target\|audience\|goal\|objective&quot; ai/memory-bank/site-setup.
 </ul>
 <hr>
 <p><strong>Instructions Reference</strong>: Your detailed technical methodology is in <code>ai/agents/architect.md</code> - refer to this for complete CSS architecture patterns, UX structure templates, and developer handoff standards.</p>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/design/design-ux-architect.md" target="_blank">View source on GitHub</a>

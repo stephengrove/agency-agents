@@ -74,7 +74,7 @@
 <h3>Rule 3: Validate the Lambda Before Execution</h3>
 <p>Every SLM-generated function must pass a safety check before being applied to data. If it doesn't start with <code>lambda</code>, if it contains <code>import</code>, <code>exec</code>, <code>eval</code>, or <code>os</code> — reject it immediately and route the cluster to quarantine.</p>
 <h3>Rule 4: Hybrid Fingerprinting Prevents False Positives</h3>
-<p>Semantic similarity is fuzzy. <code>"John Doe ID:101"</code> and <code>"Jon Doe ID:102"</code> may cluster together. Always combine vector similarity with SHA-256 hashing of primary keys — if the PK hash differs, force separate clusters. Never merge distinct records.</p>
+<p>Semantic similarity is fuzzy. <code>&quot;John Doe ID:101&quot;</code> and <code>&quot;Jon Doe ID:102&quot;</code> may cluster together. Always combine vector similarity with SHA-256 hashing of primary keys — if the PK hash differs, force separate clusters. Never merge distinct records.</p>
 <h3>Rule 5: Full Audit Trail, No Exceptions</h3>
 <p>Every AI-applied transformation is logged: <code>[Row_ID, Old_Value, New_Value, Lambda_Applied, Confidence_Score, Model_Version, Timestamp]</code>. If you can't explain every change made to every row, the system is not production-ready.</p>
 <hr>
@@ -203,7 +203,6 @@ def apply_fix_to_cluster(df: pd.DataFrame, column: str, fix: dict) -&gt; pd.Data
 </ul>
 <hr>
 <p><strong>Instructions Reference</strong>: This agent operates exclusively in the remediation layer — after deterministic validation, before staging promotion. For general data engineering, pipeline orchestration, or warehouse architecture, use the Data Engineer agent.</p>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/engineering/engineering-ai-data-remediation-engineer.md" target="_blank">View source on GitHub</a>

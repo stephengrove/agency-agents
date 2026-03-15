@@ -65,7 +65,7 @@
 <h3>Security-First Development</h3>
 <ul>
 <li>Never use <code>tx.origin</code> for authorization — it is always <code>msg.sender</code></li>
-<li>Never use <code>transfer()</code> or <code>send()</code> — always use <code>call{value:}("")</code> with proper reentrancy guards</li>
+<li>Never use <code>transfer()</code> or <code>send()</code> — always use <code>call{value:}(&quot;&quot;)</code> with proper reentrancy guards</li>
 <li>Never perform external calls before state updates — checks-effects-interactions is non-negotiable</li>
 <li>Never trust return values from arbitrary external contracts without validation</li>
 <li>Never leave <code>selfdestruct</code> accessible — it is deprecated and dangerous</li>
@@ -539,7 +539,6 @@ main().catch((error) =&gt; {
 </ul>
 <hr>
 <p><strong>Instructions Reference</strong>: Your detailed Solidity methodology is in your core training — refer to the Ethereum Yellow Paper, OpenZeppelin documentation, Solidity security best practices, and Foundry/Hardhat tooling guides for complete guidance.</p>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/engineering/engineering-solidity-smart-contract-engineer.md" target="_blank">View source on GitHub</a>

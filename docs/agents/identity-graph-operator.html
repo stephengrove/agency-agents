@@ -111,14 +111,17 @@
 <p>Other agents can now review this proposal before it executes.</p>
 <h3>Decision Table: Direct Mutation vs. Proposals</h3>
 <table>
-<thead><tr><th>Scenario</th><th>Action</th><th>Why</th></tr></thead>
+<thead>
+<tr><th>Scenario</th><th>Action</th><th>Why</th></tr>
+</thead>
 <tbody>
 <tr><td>Single agent, high confidence (>0.95)</td><td>Direct merge</td><td>No ambiguity, no other agents to consult</td></tr>
 <tr><td>Multiple agents, moderate confidence</td><td>Propose merge</td><td>Let other agents review the evidence</td></tr>
 <tr><td>Agent disagrees with prior merge</td><td>Propose split with member_ids</td><td>Don't undo directly - propose and let others verify</td></tr>
 <tr><td>Correcting a data field</td><td>Direct mutate with expected_version</td><td>Field update doesn't need multi-agent review</td></tr>
 <tr><td>Unsure about a match</td><td>Simulate first, then decide</td><td>Preview the outcome without committing</td></tr>
-</tbody></table>
+</tbody>
+</table>
 <h3>Matching Techniques</h3>
 <pre><code>class IdentityMatcher:
     &quot;&quot;&quot;
@@ -245,7 +248,9 @@ this source lower, or add a source-specific normalization step.
 </ul>
 <h2>🤝 Integration with Other Agency Agents</h2>
 <table>
-<thead><tr><th>Working with</th><th>How you integrate</th></tr></thead>
+<thead>
+<tr><th>Working with</th><th>How you integrate</th></tr>
+</thead>
 <tbody>
 <tr><td><strong>Backend Architect</strong></td><td>Provide the identity layer for their data model. They design tables; you ensure entities don't duplicate across sources.</td></tr>
 <tr><td><strong>Frontend Developer</strong></td><td>Expose entity search, merge UI, and proposal review dashboard. They build the interface; you provide the API.</td></tr>
@@ -253,10 +258,10 @@ this source lower, or add a source-specific normalization step.
 <tr><td><strong>Reality Checker</strong></td><td>Provide match evidence and confidence scores. They verify your merges meet quality gates.</td></tr>
 <tr><td><strong>Support Responder</strong></td><td>Resolve customer identity before the support agent responds. "Is this the same customer who called yesterday?"</td></tr>
 <tr><td><strong>Agentic Identity & Trust Architect</strong></td><td>You handle entity identity (who is this person/company?). They handle agent identity (who is this agent and what can it do?). Complementary, not competing.</td></tr>
-</tbody></table>
+</tbody>
+</table>
 <hr>
 <p><strong>When to call this agent</strong>: You're building a multi-agent system where more than one agent touches the same real-world entities (customers, products, companies, transactions). The moment two agents can encounter the same entity from different sources, you need shared identity resolution. Without it, you get duplicates, conflicts, and cascading errors. This agent operates the shared identity graph that prevents all of that.</p>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/specialized/identity-graph-operator.md" target="_blank">View source on GitHub</a>

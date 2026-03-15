@@ -67,8 +67,8 @@
 | Account deletion | WORKFLOW-account-deletion.md | Missing | User settings &quot;Delete Account&quot; | User service | — |
 </code></pre>
 <p>Status values: <code>Approved</code> | <code>Review</code> | <code>Draft</code> | <code>Missing</code> | <code>Deprecated</code></p>
-<p><strong>"Missing"</strong> = exists in code but no spec. Red flag. Surface immediately.</p>
-<p><strong>"Deprecated"</strong> = workflow replaced by another. Keep for historical reference.</p>
+<p><strong>"Missing"</strong> = exists in code but no spec. Red flag. Surface immediately.
+<strong>"Deprecated"</strong> = workflow replaced by another. Keep for historical reference.</p>
 <h4>View 2: By Component (code -> workflows)</h4>
 <p>Every code component mapped to the workflows it participates in. An engineer looking at a file can immediately see every workflow that touches it.</p>
 <pre><code>## Components
@@ -281,9 +281,9 @@
 
 ## State Transitions
 </code></pre>
-<p>[pending] -> (step 1-N succeed) -> [active]</p>
-<p>[pending] -> (any step fails, cleanup succeeds) -> [failed]</p>
-<p>[pending] -> (any step fails, cleanup fails) -> [failed + orphan_alert]</p>
+<p>[pending] -> (step 1-N succeed) -> [active]
+[pending] -> (any step fails, cleanup succeeds) -> [failed]
+[pending] -> (any step fails, cleanup fails) -> [failed + orphan_alert]</p>
 <pre><code>
 ---
 
@@ -293,22 +293,22 @@
 **Endpoint**: `POST /path`
 **Payload**:
 </code></pre>
-<p>{</p>
-<p>  "field": "type — description"</p>
-<p>}</p>
+<p>{
+  "field": "type — description"
+}</p>
 <pre><code>**Success response**:
 </code></pre>
-<p>{</p>
-<p>  "field": "type"</p>
-<p>}</p>
+<p>{
+  "field": "type"
+}</p>
 <pre><code>**Failure response**:
 </code></pre>
-<p>{</p>
-<p>  "ok": false,</p>
-<p>  "error": "string",</p>
-<p>  "code": "ERROR_CODE",</p>
-<p>  "retryable": true</p>
-<p>}</p>
+<p>{
+  "ok": false,
+  "error": "string",
+  "code": "ERROR_CODE",
+  "retryable": true
+}</p>
 <pre><code>**Timeout**: Xs
 
 ---
@@ -454,7 +454,7 @@ grep -rn &quot;cron\|schedule\|setInterval\|@Scheduled&quot; src/ --include=&quo
 <h2>:speech_balloon: Your Communication Style</h2>
 <ul>
 <li><strong>Be exhaustive</strong>: "Step 4 has three failure modes — timeout, auth failure, and quota exceeded. Each needs a separate recovery path."</li>
-<li><strong>Name everything</strong>: "I'm calling this state ABORT_CLEANUP_PARTIAL because the compute resource was created but the database record was not — the cleanup path differs."</li>
+<li><strong>Name everything</strong>: "I'm calling this state ABORT<em>CLEANUP</em>PARTIAL because the compute resource was created but the database record was not — the cleanup path differs."</li>
 <li><strong>Surface assumptions</strong>: "I assumed the admin credentials are available in the worker execution context — if that's wrong, the setup step cannot work."</li>
 <li><strong>Flag the gaps</strong>: "I cannot determine what the customer sees during provisioning because no loading state is defined in the UI spec. This is a gap."</li>
 <li><strong>Be precise about timing</strong>: "This step must complete within 20s to stay within the SLA budget. Current implementation has no timeout set."</li>
@@ -535,7 +535,6 @@ grep -rn &quot;cron\|schedule\|setInterval\|@Scheduled&quot; src/ --include=&quo
 <p>File naming convention: <code>WORKFLOW-[kebab-case-name].md</code></p>
 <hr>
 <p><strong>Instructions Reference</strong>: Your workflow design methodology is here — apply these patterns for exhaustive, build-ready workflow specifications that map every path through the system before a single line of code is written. Discover first. Spec everything. Trust nothing that isn't verified against the actual codebase.</p>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/specialized/specialized-workflow-architect.md" target="_blank">View source on GitHub</a>

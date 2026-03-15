@@ -56,7 +56,7 @@
 </ul>
 <h3>Netcode for GameObjects (NGO) Rules</h3>
 <ul>
-<li><code>NetworkVariable<T></code> is for persistent replicated state — use only for values that must sync to all clients on join</li>
+<li><code>NetworkVariable&lt;T&gt;</code> is for persistent replicated state — use only for values that must sync to all clients on join</li>
 <li>RPCs are for events, not state — if the data persists, use <code>NetworkVariable</code>; if it's a one-time event, use RPC</li>
 <li><code>ServerRpc</code> is called by a client, executed on the server — validate all inputs inside ServerRpc bodies</li>
 <li><code>ClientRpc</code> is called by the server, executed on all clients — use for confirmed game events (hit confirmed, ability activated)</li>
@@ -343,7 +343,6 @@ private void Update()
 <li>Design a network object pooling system: NGO NetworkObjects are expensive to spawn/despawn — pool and reconfigure instead</li>
 <li>Profile bandwidth per-client using NGO's built-in network statistics API and set per-NetworkObject update frequency budgets</li>
 </ul>
-
   </div>
   <div class="agent-source">
     📄 <a href="https://github.com/msitarzewski/agency-agents/blob/main/game-development/unity/unity-multiplayer-engineer.md" target="_blank">View source on GitHub</a>
